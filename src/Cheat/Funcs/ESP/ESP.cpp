@@ -185,7 +185,7 @@ void DrawOffscreenIndicator(Vector3 origin, float distance)
 void DrawTextOnScreen(const ImVec2& position, const ImVec2& size, const std::string& text)
 {
 	auto draw = ImGui::GetBackgroundDrawList();
-	
+
 
 	draw->AddRectFilled({ position.x - (size.x * 0.5f) - 5, position.y + 5 },
 		{ position.x + (size.x * 0.5f) + 5, position.y + 10 + (size.y * 0.5f) + 5 },
@@ -228,13 +228,15 @@ bool IsUnitValid(Unit* unit, Unit* local)
 	return true;
 }
 
-bool is_alive(__int64 unit) //taken from ida game dump
-{
-	if (!unit) return false;
-	if (*reinterpret_cast<unsigned short*>(unit + 0xFF8) <= 1u)
-		return (*reinterpret_cast<unsigned int*>(unit + 0xFA8) & 0x20000) == 0 || reinterpret_cast<unsigned char(__fastcall*)(__int64)>(*reinterpret_cast<__int64*>(unit + 0x50) + 16)(unit + 0x50);
-	return false;
-}
+//Causes crash
+
+//bool is_alive(__int64 unit) //taken from ida game dump
+//{
+//	if (!unit) return false;
+//	if (*reinterpret_cast<unsigned short*>(unit + 0xFF8) <= 1u)
+//		return (*reinterpret_cast<unsigned int*>(unit + 0xFA8) & 0x20000) == 0 || reinterpret_cast<unsigned char(__fastcall*)(__int64)>(*reinterpret_cast<__int64*>(unit + 0x50) + 16)(unit + 0x50);
+//	return false;
+//}
 
 
 void ESP()
@@ -247,7 +249,7 @@ void ESP()
 	Player* localplayer = *(Player**)(memory::address::modulebase + memory::offset::LocalPlayer);
 	bool isScoping = *(bool*)(memory::address::modulebase + memory::offset::IsScoping);
 	char* curmap = *(char**)(memory::address::cGame + memory::offset::CurrentMap);
-	
+
 	if (localplayer->IsinHangar())
 	{
 		if (localplayer->ControlledUnit == NULL or localplayer->ControlledUnit->UnitInfo == NULL)
@@ -274,10 +276,10 @@ void ESP()
 		Unit* unit = list.unitList->units[i];
 		Unit* local = localplayer->ControlledUnit;
 		Player* player = unit->PlayerInfo;
-		
+
 		if (!local)
 			continue;
-		
+
 		if (IsUnitValid(unit, local))
 		{
 			const auto draw = ImGui::GetBackgroundDrawList();
@@ -291,12 +293,12 @@ void ESP()
 
 			int count = (16 - (unit->VisualReload));
 			Vector3 bbcenter{};
-			
+
 			if (player)
 			{
 				if (!player->IsAlive())
 					continue;
-				
+
 				const auto& rotation = unit->RotationMatrix;
 				const Vector3& bbmin = unit->BBMin;
 				const Vector3& bbmax = unit->BBMax;
@@ -336,7 +338,7 @@ void ESP()
 					//if (strcmp(curmap, "levels/firing_range.bin") != 0) //If we wanna show bots only in firing range
 					//	continue;
 
-					if (!is_alive(reinterpret_cast<__int64>(unit)))
+					if (!unit->IsAlive())
 						continue;
 					if (unit->UnitInfo->isDummy())
 						continue;
@@ -371,7 +373,7 @@ void ESP()
 						}
 
 
-						DrawTextOnScreen(ImVec2(origin.x, origin.y), size ,text);
+						DrawTextOnScreen(ImVec2(origin.x, origin.y), size, text);
 
 						if (cfg::show_reload && !unit->UnitInfo->isPlane())
 						{
@@ -385,7 +387,7 @@ void ESP()
 		}
 	}
 
-	if(cfg::show_bombs)
+	if (cfg::show_bombs)
 	{
 		ProjectileList bomblist{};
 		std::uint16_t bombCount{};
@@ -422,7 +424,7 @@ void ESP()
 			}
 		}
 	}
-	if(cfg::show_rockets)
+	if (cfg::show_rockets)
 	{
 		ProjectileList rocketList{};
 		std::uint16_t rocketCount{};
@@ -458,7 +460,7 @@ void ESP()
 						draw->AddText(ImVec2(origin.x - size.x / 2, origin.y - size.y / 2), IM_COL32(255, 255, 255, 255), text);
 						ImGui::PopFont();
 					}
-					
+
 				}
 			}
 		}
@@ -493,17 +495,27 @@ void debug() {
 		unitCount = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_3);
 		break;
 	}
+	Player* localplayer = *(Player**)(memory::address::modulebase + memory::offset::LocalPlayer);
+	if (!localplayer)
+		return;
+
 	for (auto i = 0; i < unitCount; ++i)
 	{
 		const auto unit = list.unitList->units[i];
 		if (!unit)
 			continue;
+		auto local = localplayer->ControlledUnit;
+		if (!local)
+			continue;
+		if (local->Position.x == 0)
+			continue;
 		const auto id = reinterpret_cast<std::intptr_t>(unit) + i;
-		if (ImGui::TreeNode(reinterpret_cast<void*>(id), "Unit %s", unit->UnitInfo->unitName)){
+		if (ImGui::TreeNode(reinterpret_cast<void*>(id), "%s Unit: %s", unit->PlayerInfo == nullptr ? "Bot" : "Player", unit->UnitInfo->unitName)) {
 			ImGui::Text("Bot: %s", unit->PlayerInfo == nullptr ? "true" : "false");
 			ImGui::Text("Is plane: %s", unit->UnitInfo->isPlane() ? "true" : "false");
 			ImGui::Text("Is dummy: %s", unit->UnitInfo->isDummy() ? "true" : "false");
 			ImGui::Text("Position: %f %f %f", unit->Position.x, unit->Position.y, unit->Position.z);
+			ImGui::Text("Distance: %f", unit->Position.Distance(localplayer->ControlledUnit->Position));
 			ImGui::Text("Invul? %s", unit->Invulnerable ? "true" : "false");
 			ImGui::Text("Address: %p", unit);
 			if (ImGui::IsItemClicked()) {
