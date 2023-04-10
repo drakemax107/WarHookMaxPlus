@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{1615078b-58a1-4811-b178-341199bd2553}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kiero">
+      <UniqueIdentifier>{5505e42c-e9dd-4580-a024-18d8f250342b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cheat">
+      <UniqueIdentifier>{f8c06538-ee6c-4e28-b44a-7389243759d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resourses">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Cheat\Main">
+      <UniqueIdentifier>{f82f74aa-ca6d-44cd-98f5-623964d829ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cheat\Utils">
+      <UniqueIdentifier>{776dcc19-8d9e-4824-b7cf-ad199bc381e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cheat\Menu">
+      <UniqueIdentifier>{760a2bcf-3ae0-48d5-a80c-43354080177a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cheat\Config">
+      <UniqueIdentifier>{001632af-bb13-4c9b-8af7-dbda6bfb3009}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cheat\SDK">
+      <UniqueIdentifier>{342619e3-c655-4c08-a821-06b2405090f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cheat\Funcs">
+      <UniqueIdentifier>{e001ec13-c998-4aa3-92c5-287052e13464}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Extenal\imgui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\imgui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\imgui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\imgui\imgui_impl_dx11.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\imgui\imgui_impl_win32.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\imgui\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\kiero\kiero.cpp">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\kiero\minhook\src\buffer.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\kiero\minhook\src\hook.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\kiero\minhook\src\trampoline.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\kiero\minhook\src\hde\hde32.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\kiero\minhook\src\hde\hde64.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cheat\main.cpp">
+      <Filter>Cheat\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cheat\dllmain.cpp">
+      <Filter>Cheat\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cheat\Menu\Menu.cpp">
+      <Filter>Cheat\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cheat\Utils\Font.cpp">
+      <Filter>Cheat\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Extenal\imgui\imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cheat\Config\Config.cpp">
+      <Filter>Cheat\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cheat\Utils\SigScanner.cpp">
+      <Filter>Cheat\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cheat\Utils\Memory.cpp">
+      <Filter>Cheat\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cheat\Funcs\ESP\ESP.cpp">
+      <Filter>Cheat\Funcs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cheat\Funcs\Misc\Misc.cpp">
+      <Filter>Cheat\Funcs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Extenal\imgui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\imgui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\imgui\imgui_impl_dx11.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\imgui\imgui_impl_win32.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\imgui\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\imgui\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\imgui\imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\imgui\imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\kiero\kiero.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\kiero\minhook\include\MinHook.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\kiero\minhook\src\buffer.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\kiero\minhook\src\trampoline.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\kiero\minhook\src\hde\hde32.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\kiero\minhook\src\hde\hde64.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\kiero\minhook\src\hde\pstdint.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\kiero\minhook\src\hde\table32.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Extenal\kiero\minhook\src\hde\table64.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\main.h">
+      <Filter>Cheat\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Utils\Font.h">
+      <Filter>Cheat\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Menu\Menu.h">
+      <Filter>Cheat\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Utils\SigScanner.h">
+      <Filter>Cheat\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Utils\Sigs.h">
+      <Filter>Cheat\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Includes.h">
+      <Filter>Cheat\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Config\Config.h">
+      <Filter>Cheat\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Utils\Math.h">
+      <Filter>Cheat\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Utils\Memory.h">
+      <Filter>Cheat\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Funcs\ESP\ESP.h">
+      <Filter>Cheat\Funcs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\SDK\Units.h">
+      <Filter>Cheat\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\SDK\SDK.h">
+      <Filter>Cheat\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\Funcs\Misc\Misc.h">
+      <Filter>Cheat\Funcs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\SDK\Hud.h">
+      <Filter>Cheat\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cheat\SDK\Weapons.h">
+      <Filter>Cheat\SDK</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Extenal\kiero\minhook\dll_resources\MinHook.def">
+      <Filter>Kiero</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\Extenal\kiero\minhook\dll_resources\MinHook.rc">
+      <Filter>Resourses</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
