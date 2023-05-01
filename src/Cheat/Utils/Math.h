@@ -94,7 +94,6 @@ struct Vector3
 		if (index == 0) return x;
 		if (index == 1) return y;
 		if (index == 2) return z;
-		throw std::out_of_range("Index out of range for Vector3");
 	}
 
 	float Distance(const Vector3& other) const noexcept

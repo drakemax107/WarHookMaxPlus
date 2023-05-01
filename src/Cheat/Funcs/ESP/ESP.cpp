@@ -2,6 +2,7 @@
 #include "../../SDK/SDK.h"
 #include "../../Menu/Menu.h" // for fonts
 #include <iostream>
+#include <iomanip>   
 #include <sstream>
 #include <array>
 #include <format>
@@ -17,7 +18,7 @@ bool WorldToScreen(const Vector3& in, Vector3& out)
 	if (!visible)
 		return false;
 	else
-		width = 1.0 / width;
+		width = 1.0f / width;
 
 	float x = in.x * mat[0][0] + in.y * mat[1][0] + in.z * mat[2][0] + mat[3][0];
 	float y = in.x * mat[0][1] + in.y * mat[1][1] + in.z * mat[2][1] + mat[3][1];
@@ -340,8 +341,11 @@ void ESP()
 
 					if (!unit->IsAlive())
 						continue;
-					if (unit->UnitInfo->isDummy())
-						continue;
+					if (!localplayer->IsinHangar()) {
+						if (unit->UnitInfo->isDummy())
+							continue;
+					}
+					
 					if (!cfg::show_planes)
 					{
 						if (unit->UnitInfo->isPlane())
@@ -400,6 +404,11 @@ void ESP()
 			if (!unit)
 				continue;
 			auto draw = ImGui::GetBackgroundDrawList();
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(2) << unit->getExpodeTime();
+			std::string time_str = oss.str();
+			const char* time = time_str.c_str();
+
 			Vector3 origin = { };
 			if (WorldToScreen(unit->Position, origin))
 			{
@@ -409,16 +418,24 @@ void ESP()
 				}
 				if (cfg::Bout_type == 0) {
 					ImGui::PushFont(menu::icons);
-					const char* text = "A";
-					const auto size = ImGui::CalcTextSize(text);
-					draw->AddText(ImVec2(origin.x - size.x / 2, origin.y - size.y / 2), IM_COL32(255, 255, 255, 255), text);
+					const char* name = "A";
+					const auto size = ImGui::CalcTextSize(name);
+					const auto size2 = ImGui::CalcTextSize(time);
+					
+					draw->AddText(ImVec2(origin.x - size.x / 2, origin.y - size.y / 2), IM_COL32(255, 255, 255, 255), name);
+					ImGui::PopFont();
+					ImGui::PushFont(menu::def_main);
+					draw->AddText(ImVec2(origin.x - size2.x / 2, origin.y + size.y), IM_COL32(255, 255, 255, 255), time);
 					ImGui::PopFont();
 				}
 				else {
 					ImGui::PushFont(menu::def_main);
-					const char* text = "BOMB";
-					const auto size = ImGui::CalcTextSize(text);
-					draw->AddText(ImVec2(origin.x - size.x / 2, origin.y - size.y / 2), IM_COL32(255, 255, 255, 255), text);
+					const char* name = "BOMB";
+					const auto size = ImGui::CalcTextSize(name);
+					const auto size2 = ImGui::CalcTextSize(time);
+					
+					draw->AddText(ImVec2(origin.x - size.x / 2, origin.y - size.y / 2), IM_COL32(255, 255, 255, 255), name);
+					draw->AddText(ImVec2(origin.x - size2.x / 2, origin.y - size.y / 2 + size.y), IM_COL32(255, 255, 255, 255), time);
 					ImGui::PopFont();
 				}
 			}
@@ -468,38 +485,8 @@ void ESP()
 }
 
 
-
-void debug() {
-	ImGui::SetNextWindowSize({ 400, 400 });
-	ImGui::Begin("Unit List");
-	static const char* items[] = { "Unit List 1", "Unit List 2", "Unit List 3" };
-	static int currentItem = 0;
-
-	UnitList list{};
-	std::uint16_t unitCount{};
-
-	ImGui::Combo("Unit List", &currentItem, items, IM_ARRAYSIZE(items));
-
-	switch (currentItem)
-	{
-	case 0:
-		list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_1);
-		unitCount = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_1);
-		break;
-	case 1:
-		list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_2);
-		unitCount = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_2);
-		break;
-	case 2:
-		list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_3);
-		unitCount = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_3);
-		break;
-	}
-	Player* localplayer = *(Player**)(memory::address::modulebase + memory::offset::LocalPlayer);
-	if (!localplayer)
-		return;
-
-	for (auto i = 0; i < unitCount; ++i)
+void drawUnitWindow(UnitList list, std::uint16_t Count, Player* localplayer) {
+	for (auto i = 0; i < Count; ++i)
 	{
 		const auto unit = list.unitList->units[i];
 		if (!unit)
@@ -538,37 +525,70 @@ void debug() {
 			ImGui::TreePop();
 		}
 	}
-	/*ProjectileList bomblist{};
-	ProjectileList rocketList{};
-	std::uint16_t bombCount{};
-	std::uint16_t rocketCount{};
-	bomblist = *(ProjectileList*)(memory::address::modulebase + memory::offset::BombArray);
-	rocketList = *(ProjectileList*)(memory::address::modulebase + memory::offset::RocketArray);
-	bombCount = *(std::uint16_t*)(memory::address::modulebase + memory::offset::BombArray + 0x10);
-	rocketCount = *(std::uint16_t*)(memory::address::modulebase + memory::offset::RocketArray + 0x10);
+}
 
-	for (auto i = 0; i < bombCount; ++i)
+void drawProjectileWindow(ProjectileList list,std::uint16_t Count) {
+	for (auto i = 0; i < Count; ++i)
 	{
-		const auto unit = bomblist.projectileList->projectiles[i];
+		const auto unit = list.projectileList->projectiles[i];
 		if (!unit)
 			continue;
 		const auto id = reinterpret_cast<std::intptr_t>(unit) + i;
 		if (ImGui::TreeNode(reinterpret_cast<void*>(id), "Unit %s", unit->Name)) {
 			ImGui::Text("Position: X: %f, Y: %f, Z: %f", unit->Position.x, unit->Position.y, unit->Position.z);
+			ImGui::Text("Owner: %s", unit->OwnerUnit->UnitInfo->unitName);
+			ImGui::Text("Delay: %f", unit->BombDelay);
+			ImGui::Text("Explotion time %f", unit->getExpodeTime());
 			ImGui::TreePop();
 		}
 	}
-	for (auto i = 0; i < rocketCount; ++i)
-	{
-		const auto unit = rocketList.projectileList->projectiles[i];
-		if (!unit)
-			continue;
-		const auto id = reinterpret_cast<std::intptr_t>(unit) + i;
-		if (ImGui::TreeNode(reinterpret_cast<void*>(id), "Unit %s", unit->Name)) {
-			ImGui::Text("Position: X: %f, Y: %f, Z: %f", unit->Position.x, unit->Position.y, unit->Position.z);
-			ImGui::TreePop();
-		}
-	}*/
+}
 
-	ImGui::End();
+
+void debug() {
+	ImGui::SetNextWindowSize({ 400, 400 });
+	if (ImGui::Begin("Unit List")) {
+		static const char* items[] = { "Unit List 1", "Unit List 2", "Unit List 3", "BombList", "RocketList" };
+		static int currentItem = 0;
+
+		UnitList list{};
+		ProjectileList plist{};
+		std::uint16_t Count{};
+
+		ImGui::Combo("Unit List", &currentItem, items, IM_ARRAYSIZE(items));
+
+		Player* localplayer = *(Player**)(memory::address::modulebase + memory::offset::LocalPlayer);
+		if (!localplayer)
+			return;
+		switch (currentItem)
+		{
+		case 0:
+			list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_1);
+			Count = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_1);
+			drawUnitWindow(list, Count, localplayer);
+			break;
+		case 1:
+			list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_2);
+			Count = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_2);
+			drawUnitWindow(list, Count, localplayer);
+			break;
+		case 2:
+			list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_3);
+			Count = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_3);
+			drawUnitWindow(list, Count, localplayer);
+			break;
+		case 3:
+			plist = *(ProjectileList*)(memory::address::modulebase + memory::offset::BombArray);
+			Count = *(std::uint16_t*)(memory::address::modulebase + memory::offset::BombArray + 0x10);
+			drawProjectileWindow(plist, Count);
+			break;
+		case 4:
+			plist = *(ProjectileList*)(memory::address::modulebase + memory::offset::RocketArray);
+			Count = *(std::uint16_t*)(memory::address::modulebase + memory::offset::RocketArray + 0x10);
+			drawProjectileWindow(plist, Count);
+			break;
+		}
+
+		ImGui::End();
+	}
 }

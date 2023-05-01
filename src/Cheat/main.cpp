@@ -335,6 +335,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 #endif // _DEBUG
 	if (!menu::agree)
 		menu::showWarningwindow();
+	
 	if (menu::agree)
 	{
 		if (menu::open)

@@ -54,27 +54,29 @@ public:
 	char pad_0000[504]; //0x0000
 	Vector3 BBMin; //0x01F8
 	Vector3 BBMax; //0x0204
-	char pad_0210[592]; //0x0210
-	char* UnitName; //0x0460
-	char pad_0468[688]; //0x0468
-	uint8_t VisualReload; //0x0718
-	char pad_0719[539]; //0x0719
-	Matrix3x3 RotationMatrix; //0x0934
-	Vector3 Position; //0x0958
-	char pad_0964[1424]; //0x0964
-	float InvulTimer; //0x0EF4
-	char pad_0EF8[32]; //0x0EF8
-	bool Invulnerable; //0x0F18
-	char pad_0F19[223]; //0x0F19
-	uint8_t UnitState; //0x0FF8
-	char pad_0FF9[15]; //0x0FF9
-	class Player* PlayerInfo; //0x1008
-	char pad_1010[64]; //0x1010
-	uint8_t TeamNum; //0x1050
-	char pad_1051[15]; //0x1051
-	class Info* UnitInfo; //0x1060
-	char pad_1068[168]; //0x1068
-	class Armory* Weapons; //0x1110
+	char pad_0210[616]; //0x0210
+	char* UnitName; //0x0478
+	char pad_0480[688]; //0x0480
+	uint8_t VisualReload; //0x0730
+	char pad_0731[539]; //0x0731
+	Matrix3x3 RotationMatrix; //0x094C
+	Vector3 Position; //0x0970
+	char pad_097C[1424]; //0x097C
+	float InvulTimer; //0x0F0C
+	char pad_0F10[32]; //0x0F10
+	bool Invulnerable; //0x0F30
+	char pad_0F31[223]; //0x0F31
+	uint8_t UnitState; //0x1010
+	char pad_1011[15]; //0x1011
+	class Player* PlayerInfo; //0x1020
+	char pad_1028[64]; //0x1028
+	uint8_t TeamNum; //0x1068
+	char pad_1069[15]; //0x1069
+	class Info* UnitInfo; //0x1078
+	char pad_1080[168]; //0x1080
+	class Armory* Weapons; //0x1128
+
+
 
 	bool IsAlive() const noexcept
 	{
