@@ -344,7 +344,8 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		}
 	}
 #ifdef _DEBUG
-	debug();
+	if(cfg::esp_status)
+		debug();
 #endif // _DEBUG
 
 	ESP();

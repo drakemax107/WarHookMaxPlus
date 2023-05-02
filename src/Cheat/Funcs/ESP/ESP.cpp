@@ -9,8 +9,8 @@
 
 bool WorldToScreen(const Vector3& in, Vector3& out)
 {
-	const uintptr_t mat_addr = (uintptr_t)(memory::address::modulebase + memory::offset::mat_addr);
-	const ViewMatrix& mat = *(ViewMatrix*)mat_addr;
+	const uintptr_t mat_addr = memory::address::modulebase + memory::offset::mat_addr;
+	const ViewMatrix& mat = *reinterpret_cast<ViewMatrix*>(mat_addr);
 
 	float width = mat[0][3] * in.x + mat[1][3] * in.y + mat[2][3] * in.z + mat[3][3];
 
@@ -244,12 +244,12 @@ void ESP()
 {
 	if (!cfg::esp_status)
 		return;
-	UnitList list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_3);
+	UnitList list = *reinterpret_cast<UnitList*>(memory::address::cGame + memory::offset::UnitList_3);
 	if (!list.unitList)
 		return;
-	Player* localplayer = *(Player**)(memory::address::modulebase + memory::offset::LocalPlayer);
-	bool isScoping = *(bool*)(memory::address::modulebase + memory::offset::IsScoping);
-	char* curmap = *(char**)(memory::address::cGame + memory::offset::CurrentMap);
+	Player* localplayer = *reinterpret_cast<Player**>(memory::address::modulebase + memory::offset::LocalPlayer);
+	bool isScoping = *reinterpret_cast<bool*>(memory::address::modulebase + memory::offset::IsScoping);
+	char* curmap = *reinterpret_cast<char**>(memory::address::cGame + memory::offset::CurrentMap);
 
 	if (localplayer->IsinHangar())
 	{
@@ -288,7 +288,7 @@ void ESP()
 			Vector3 position = unit->Position;
 			float distance = local->Position.Distance(position);
 			auto name = u8"";
-			name = (char8_t*)(unit->UnitInfo->ShortName);
+			name = reinterpret_cast<char8_t*>(unit->UnitInfo->ShortName);
 			auto text = std::format("{} - {}m", (char*)name, (int)distance, 2);
 			ImVec2 size = ImGui::CalcTextSize(text.c_str());
 
@@ -395,8 +395,8 @@ void ESP()
 	{
 		ProjectileList bomblist{};
 		std::uint16_t bombCount{};
-		bomblist = *(ProjectileList*)(memory::address::modulebase + memory::offset::BombArray);
-		bombCount = *(std::uint16_t*)(memory::address::modulebase + memory::offset::BombArray + 0x10);
+		bomblist = *reinterpret_cast<ProjectileList*>(memory::address::modulebase + memory::offset::BombArray);
+		bombCount = *reinterpret_cast<std::uint16_t*>(memory::address::modulebase + memory::offset::BombArray + 0x10);
 
 		for (auto i = 0; i < bombCount; ++i)
 		{
@@ -425,7 +425,7 @@ void ESP()
 					draw->AddText(ImVec2(origin.x - size.x / 2, origin.y - size.y / 2), IM_COL32(255, 255, 255, 255), name);
 					ImGui::PopFont();
 					ImGui::PushFont(menu::def_main);
-					draw->AddText(ImVec2(origin.x - size2.x / 2, origin.y + size.y), IM_COL32(255, 255, 255, 255), time);
+					draw->AddText(ImVec2(origin.x - size2.x / 4, origin.y + size.y), IM_COL32(255, 255, 255, 255), time);
 					ImGui::PopFont();
 				}
 				else {
@@ -445,15 +445,20 @@ void ESP()
 	{
 		ProjectileList rocketList{};
 		std::uint16_t rocketCount{};
-		rocketList = *(ProjectileList*)(memory::address::modulebase + memory::offset::RocketArray);
-		rocketCount = *(std::uint16_t*)(memory::address::modulebase + memory::offset::RocketArray + 0x10);
-
+		rocketList = *reinterpret_cast<ProjectileList*>(memory::address::modulebase + memory::offset::RocketArray);
+		rocketCount = *reinterpret_cast<std::uint16_t*>(memory::address::modulebase + memory::offset::RocketArray + 0x10);
+		
 		for (auto i = 0; i < rocketCount; ++i)
 		{
 			const auto unit = rocketList.projectileList->projectiles[i];
 			if (!unit)
 				continue;
 			auto draw = ImGui::GetBackgroundDrawList();
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(1) << localplayer->ControlledUnit->Position.Distance(unit->Position);
+			std::string dist_str = oss.str();
+			const char* text2 = dist_str.c_str();
+			const auto size2 = ImGui::CalcTextSize(text2);
 			Vector3 origin = { };
 			if (WorldToScreen(unit->Position, origin))
 			{
@@ -469,12 +474,16 @@ void ESP()
 						const auto size = ImGui::CalcTextSize(text);
 						draw->AddText(ImVec2(origin.x - size.x / 2, origin.y - size.y / 2), IM_COL32(255, 255, 255, 255), text);
 						ImGui::PopFont();
+						ImGui::PushFont(menu::def_main);
+						draw->AddText(ImVec2(origin.x - size2.x / 2, origin.y - size.y / 2 + size.y), IM_COL32(255, 255, 255, 255), text2);
+						ImGui::PopFont();
 					}
 					else {
 						ImGui::PushFont(menu::def_main);
 						const char* text = "x";
 						const auto size = ImGui::CalcTextSize(text);
 						draw->AddText(ImVec2(origin.x - size.x / 2, origin.y - size.y / 2), IM_COL32(255, 255, 255, 255), text);
+						draw->AddText(ImVec2(origin.x - size2.x / 2, origin.y - size.y / 2 + size.y), IM_COL32(255, 255, 255, 255), text2);
 						ImGui::PopFont();
 					}
 
@@ -509,8 +518,8 @@ void drawUnitWindow(UnitList list, std::uint16_t Count, Player* localplayer) {
 				std::stringstream stream{};
 				stream << std::hex << reinterpret_cast<std::uintptr_t>(unit);
 				ImGui::SetClipboardText(stream.str().c_str());
-
 			}
+			
 			ImGui::Text("Unitstate: %d", unit->UnitState);
 			if (ImGui::TreeNode(reinterpret_cast<void*>(id + 1), "Unit info")) {
 				ImGui::Text("Unit name: %s", unit->UnitInfo->unitName);
@@ -539,6 +548,13 @@ void drawProjectileWindow(ProjectileList list,std::uint16_t Count) {
 			ImGui::Text("Owner: %s", unit->OwnerUnit->UnitInfo->unitName);
 			ImGui::Text("Delay: %f", unit->BombDelay);
 			ImGui::Text("Explotion time %f", unit->getExpodeTime());
+			ImGui::Text("Address: %p", unit);
+			if (ImGui::IsItemClicked()) {
+				std::stringstream stream{};
+				stream << std::hex << reinterpret_cast<std::uintptr_t>(unit);
+				ImGui::SetClipboardText(stream.str().c_str());
+			}
+			
 			ImGui::TreePop();
 		}
 	}
@@ -547,48 +563,50 @@ void drawProjectileWindow(ProjectileList list,std::uint16_t Count) {
 
 void debug() {
 	ImGui::SetNextWindowSize({ 400, 400 });
-	if (ImGui::Begin("Unit List")) {
-		static const char* items[] = { "Unit List 1", "Unit List 2", "Unit List 3", "BombList", "RocketList" };
-		static int currentItem = 0;
+	ImGui::Begin("Unit List");
+	static const char* items[] = { "Unit List 1", "Unit List 2", "Unit List 3", "BombList", "RocketList" };
+	static int currentItem = 0;
 
-		UnitList list{};
-		ProjectileList plist{};
-		std::uint16_t Count{};
+	UnitList list{};
+	ProjectileList plist{};
+	std::uint16_t Count{};
 
-		ImGui::Combo("Unit List", &currentItem, items, IM_ARRAYSIZE(items));
-
-		Player* localplayer = *(Player**)(memory::address::modulebase + memory::offset::LocalPlayer);
-		if (!localplayer)
-			return;
-		switch (currentItem)
-		{
-		case 0:
-			list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_1);
-			Count = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_1);
-			drawUnitWindow(list, Count, localplayer);
-			break;
-		case 1:
-			list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_2);
-			Count = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_2);
-			drawUnitWindow(list, Count, localplayer);
-			break;
-		case 2:
-			list = *(UnitList*)(memory::address::cGame + memory::offset::UnitList_3);
-			Count = *(std::uint16_t*)(memory::address::cGame + memory::offset::UnitCount_3);
-			drawUnitWindow(list, Count, localplayer);
-			break;
-		case 3:
-			plist = *(ProjectileList*)(memory::address::modulebase + memory::offset::BombArray);
-			Count = *(std::uint16_t*)(memory::address::modulebase + memory::offset::BombArray + 0x10);
-			drawProjectileWindow(plist, Count);
-			break;
-		case 4:
-			plist = *(ProjectileList*)(memory::address::modulebase + memory::offset::RocketArray);
-			Count = *(std::uint16_t*)(memory::address::modulebase + memory::offset::RocketArray + 0x10);
-			drawProjectileWindow(plist, Count);
-			break;
-		}
-
-		ImGui::End();
+	ImGui::Combo("Unit List", &currentItem, items, IM_ARRAYSIZE(items));
+		
+	Player* localplayer = *reinterpret_cast<Player**>(memory::address::modulebase + memory::offset::LocalPlayer);
+	if (!localplayer)
+		return;
+	switch (currentItem)
+	{
+	case 0:
+		list = *reinterpret_cast<UnitList*>(memory::address::cGame + memory::offset::UnitList_1);
+		Count = *reinterpret_cast<std::uint16_t*>(memory::address::cGame + memory::offset::UnitCount_1);
+		drawUnitWindow(list, Count, localplayer);
+		break;
+	case 1:
+		list = *reinterpret_cast<UnitList*>(memory::address::cGame + memory::offset::UnitList_2);
+		Count = *reinterpret_cast<std::uint16_t*>(memory::address::cGame + memory::offset::UnitCount_2);
+		drawUnitWindow(list, Count, localplayer);
+		break;
+	case 2:
+		list = *reinterpret_cast<UnitList*>(memory::address::cGame + memory::offset::UnitList_3);
+		Count = *reinterpret_cast<std::uint16_t*>(memory::address::cGame + memory::offset::UnitCount_3);
+		drawUnitWindow(list, Count, localplayer);
+		break;
+	case 3:
+		plist = *reinterpret_cast<ProjectileList*>(memory::address::modulebase + memory::offset::BombArray);
+		Count = *reinterpret_cast<std::uint16_t*>(memory::address::modulebase + memory::offset::BombArray + 0x10);
+		drawProjectileWindow(plist, Count);
+		break;
+	case 4:
+		plist = *reinterpret_cast<ProjectileList*>(memory::address::modulebase + memory::offset::RocketArray);
+		Count = *reinterpret_cast<std::uint16_t*>(memory::address::modulebase + memory::offset::RocketArray + 0x10);
+		drawProjectileWindow(plist, Count);
+		break;
+	default:
+		break;
 	}
+	
+	ImGui::End();
+	
 }

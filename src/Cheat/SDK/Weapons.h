@@ -23,7 +23,7 @@ public:
 
 
 	float getExpodeTime() {
-		return ExplodeTime < 0 ? BombDelay : (BombDelay - ExplodeTime);
+		return ExplodeTime <= 0 ? BombDelay : (BombDelay - ExplodeTime);
 	}
 }; 
 
