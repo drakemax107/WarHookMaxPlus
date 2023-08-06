@@ -1,5 +1,6 @@
-# WarHook
+# WarHookMaxPlus
 
-## Some DLC for certain Thunder War game
+## Some DLC for certain Warhook
 
-### Join WarHook discord server: [https://discord.gg/Y9UnwSPQYD](https://discord.gg/Y9UnwSPQYD)
+### Aimbot supported
+###Join WarHook discord server: [https://discord.gg/Y9UnwSPQYD](https://discord.gg/Y9UnwSPQYD)
